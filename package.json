@@ -13,5 +13,8 @@
   },
   "keywords": [],
   "author": "Mohammed Aminoor Rahman",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "3.3.3"
+  }
 }
