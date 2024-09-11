@@ -54,6 +54,7 @@ These dependencies are necessary for the application to function in production:
 ## Linting
 
 - To check for code issues using ESLint, run:
+  
   ```
   npm run lint
   ```
@@ -61,8 +62,6 @@ These dependencies are necessary for the application to function in production:
 ## Environment Variables
 
 This file contains the environment variables needed for configuring the application. Make sure to fill in the appropriate values before starting the server.
-
-## Environment Variables
 
 - **`PORT`**:  
   The port on which the server should run.
