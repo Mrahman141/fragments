@@ -17,10 +17,14 @@ The following packages are used during the development process:
 
 These dependencies are necessary for the application to function in production:
 
+- **[aws-jwt-verify](https://www.npmjs.com/package/aws-jwt-verify)**: A library for verifying JSON Web Tokens (JWTs) issued by Amazon Cognito and other AWS services.
 - **[compression](https://www.npmjs.com/package/compression)**: Middleware for Express that compresses HTTP responses to improve performance.
-- **[cors](https://www.npmjs.com/package/cors)**: A package that provides middleware to enable Cross-Origin Resource Sharing (CORS) in Express apps.
+- **[cors](https://www.npmjs.com/package/cors)**: Provides middleware to enable Cross-Origin Resource Sharing (CORS) in Express apps.
+- **[dotenv](https://www.npmjs.com/package/dotenv)**: Loads environment variables from a `.env` file into `process.env`, enhancing security and flexibility.
 - **[express](https://www.npmjs.com/package/express)**: A fast, unopinionated, minimalist web framework for Node.js.
 - **[helmet](https://www.npmjs.com/package/helmet)**: Helps secure your Express app by setting various HTTP headers.
+- **[passport](https://www.npmjs.com/package/passport)**: Simple, unobtrusive authentication for Node.js, supporting a wide range of strategies.
+- **[passport-http-bearer](https://www.npmjs.com/package/passport-http-bearer)**: HTTP Bearer authentication strategy for Passport, used for securing APIs.
 - **[pino](https://www.npmjs.com/package/pino)**: A fast and low-overhead logging library for Node.js.
 - **[pino-http](https://www.npmjs.com/package/pino-http)**: HTTP logger for Express compatible with Pino.
 - **[pino-pretty](https://www.npmjs.com/package/pino-pretty)**: Adds human-readable formatting to Pino logs during development.
@@ -54,6 +58,28 @@ These dependencies are necessary for the application to function in production:
   npm run lint
   ```
 
+## Environment Variables
+
+This file contains the environment variables needed for configuring the application. Make sure to fill in the appropriate values before starting the server.
+
+## Environment Variables
+
+- **`PORT`**:  
+  The port on which the server should run.
+
+- **`LOG_LEVEL`**:  
+  Specifies which log messages to display. Common options are:
+
+  - `info` (for production)
+  - `debug` (for development)
+  - `silent` (to disable logging)
+
+- **`AWS_COGNITO_POOL_ID`**:  
+  The Amazon Cognito User Pool ID for AWS. This value should be obtained from your AWS Cognito setup.
+
+- **`AWS_COGNITO_CLIENT_ID`**:  
+  The Client App ID associated with the User Pool in AWS Cognito.
+
 ## API Routes
 
 ### Health Check
@@ -69,3 +95,10 @@ These dependencies are necessary for the application to function in production:
 - **Method:** Any
 - **Description:** Returns a 404 error for undefined routes.
 - **Response:** `404 Not Found`
+
+### Get a list of fragments for the current user
+
+- **Route:** `/v1/fragments`
+- **Method:** `GET`
+- **Description:** An authenticated route for the current user to get a list of fragments
+- **Response:** `200 OK`, `401 Unauthorized`

@@ -14,7 +14,7 @@ if (options.level === 'debug') {
   };
 
   // Printing all the process environment variables
-  console.log(process.env)
+  // console.log(process.env)
 }
 
 // Create and export a Pino Logger instance:
