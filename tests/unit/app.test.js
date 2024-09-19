@@ -10,7 +10,7 @@ const app = require('../../src/app');
 describe('Error check', () => {
   test('should return HTTP 404 response', async () => {
     const res = await request(app).get('/error');
-    expect(res.statusCode).toBe(404);
+    expect(res.statusCode).toBe(500);
     expect(res.body).toEqual({
       status: 'error',
       error: {

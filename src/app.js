@@ -41,7 +41,6 @@ app.use(passport.initialize());
 
 app.use('/', require('./routes'));
 
-const unusedVar = "aminoor";
 // Add 404 middleware to handle any requests for resources that can't be found
 app.use((req, res) => {
   const errorResponse = createErrorResponse(404, 'not found');
