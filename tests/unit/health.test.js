@@ -6,7 +6,7 @@ const request = require('supertest');
 const app = require('../../src/app');
 
 // Get the version and author from our package.json
-const { version } = require('../../package.json');
+const { version, author } = require('../../package.json');
 
 describe('/ health check', () => {
   test('should return HTTP 200 response', async () => {
@@ -26,7 +26,7 @@ describe('/ health check', () => {
 
   test('should return correct version, githubUrl, and author in response', async () => {
     const res = await request(app).get('/');
-    expect(res.body.author).toEqual("Aminoor");
+    expect(res.body.author).toEqual(author);
     expect(res.body.githubUrl.startsWith('https://github.com/')).toBe(true);
     expect(res.body.version).toEqual(version);
   });
