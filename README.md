@@ -10,8 +10,10 @@ The following packages are used during the development process:
 - **[cross-env](https://www.npmjs.com/package/cross-env)**: A tool for setting environment variables across different platforms in a uniform manner.
 - **[eslint](https://www.npmjs.com/package/eslint)**: A popular JavaScript linter that analyzes your code to find and fix problems.
 - **[globals](https://www.npmjs.com/package/globals)**: Provides a list of global variables to be used in ESLint configurations.
+- **[jest](https://www.npmjs.com/package/jest)**: A JavaScript testing framework designed to ensure correctness of any JavaScript codebase.
 - **[nodemon](https://www.npmjs.com/package/nodemon)**: A utility that monitors for changes in your source and automatically restarts your Node.js application during development.
 - **[prettier](https://www.npmjs.com/package/prettier)**: An opinionated code formatter to maintain consistent code style across your project.
+- **[supertest](https://www.npmjs.com/package/supertest)**: A library for testing HTTP servers, allowing assertions on HTTP requests and responses.
 
 ## Production Dependencies
 
@@ -23,6 +25,8 @@ These dependencies are necessary for the application to function in production:
 - **[dotenv](https://www.npmjs.com/package/dotenv)**: Loads environment variables from a `.env` file into `process.env`, enhancing security and flexibility.
 - **[express](https://www.npmjs.com/package/express)**: A fast, unopinionated, minimalist web framework for Node.js.
 - **[helmet](https://www.npmjs.com/package/helmet)**: Helps secure your Express app by setting various HTTP headers.
+- **[http-auth](https://www.npmjs.com/package/http-auth)**: A simple HTTP authentication library for Node.js that supports Basic, Digest, and more.
+- **[http-auth-passport](https://www.npmjs.com/package/http-auth-passport)**: A package that integrates `http-auth` with the `passport.js` authentication middleware.
 - **[passport](https://www.npmjs.com/package/passport)**: Simple, unobtrusive authentication for Node.js, supporting a wide range of strategies.
 - **[passport-http-bearer](https://www.npmjs.com/package/passport-http-bearer)**: HTTP Bearer authentication strategy for Passport, used for securing APIs.
 - **[pino](https://www.npmjs.com/package/pino)**: A fast and low-overhead logging library for Node.js.
@@ -54,7 +58,7 @@ These dependencies are necessary for the application to function in production:
 ## Linting
 
 - To check for code issues using ESLint, run:
-  
+
   ```
   npm run lint
   ```
