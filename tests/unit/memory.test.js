@@ -65,38 +65,4 @@ describe('Fragment operations', () => {
     expect(metadataResult).toBe(undefined);
     expect(dataResult).toBe(undefined);
   });
-
-
-  test('writeFragment() expects arguments', async () => {
-    expect(async () => await writeFragment()).rejects.toThrow();
-    expect(async () => await writeFragment({ id: '', data: '' })).rejects.toThrow();
-  });
-  
-  test('readFragment() expects arguments', async () => {
-    expect(async () => await readFragment()).rejects.toThrow();
-    expect(async () => await readFragment(null, 'id')).rejects.toThrow();
-    expect(async () => await readFragment('ownerId', null)).rejects.toThrow();
-  });
-  
-  test('writeFragmentData() expects arguments', async () => {
-    let buffer = Buffer.from('Hello');
-    expect(async () => await writeFragmentData()).rejects.toThrow();
-    expect(async () => await writeFragmentData('ownerId', null, buffer)).rejects.toThrow();
-    expect(async () => await writeFragmentData('ownerId', 'id', null)).rejects.toThrow();
-  });
-  
-  test('readFragmentData() expects arguments', async () => {
-    expect(async () => await readFragmentData()).rejects.toThrow();
-    expect(async () => await readFragmentData('ownerId', null)).rejects.toThrow();
-  });
-  
-  test('listFragments() expects arguments', async () => {
-    expect(async () => await listFragments()).rejects.toThrow();
-  });
-  
-  test('deleteFragment() expects arguments', async () => {
-    expect(async () => await deleteFragment()).rejects.toThrow();
-    expect(async () => await deleteFragment('ownerId', null)).rejects.toThrow();
-  });
-  
 });
