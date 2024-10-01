@@ -77,4 +77,15 @@ describe('POST /v1/fragments', () => {
     expect(res.body.fragments.ownerId).toBe('user1@email.com'); 
 
   });
+
+  test('No data sent through the body', async () => {
+
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/plain')
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body.status).toBe('error');
+  });
 });
