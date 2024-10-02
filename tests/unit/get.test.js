@@ -4,21 +4,78 @@ const request = require('supertest');
 
 const app = require('../../src/app');
 
+const hash = require('../../src/hash');
+
+
 describe('GET /v1/fragments', () => {
-  // If the request is missing the Authorization header, it should be forbidden
-  test('unauthenticated requests are denied', () => request(app).get('/v1/fragments').expect(401));
 
-  // If the wrong username/password pair are used (no such user), it should be forbidden
-  test('incorrect credentials are denied', () =>
-    request(app).get('/v1/fragments').auth('invalid@email.com', 'incorrect_password').expect(401));
 
-  // Using a valid username/password pair should give a success result with a .fragments array
-  test('authenticated users get a fragments array', async () => {
-    const res = await request(app).get('/v1/fragments').auth('user1@email.com', 'password1');
-    expect(res.statusCode).toBe(200);
-    expect(res.body.status).toBe('ok');
-    expect(Array.isArray(res.body.fragments)).toBe(true);
+  describe('GET all Fragments route', () => {
+
+    test('unauthenticated requests are denied', () => request(app).get('/v1/fragments').expect(401));
+
+    test('incorrect credentials are denied', () =>
+      request(app).get('/v1/fragments').auth('invalid@email.com', 'incorrect_password').expect(401));
+
+    test('authenticated users get a empty fragments array', async () => {
+      const res = await request(app).get('/v1/fragments').auth('user1@email.com', 'password1');
+
+      console.log(res.body.fragments[0])
+      expect(res.statusCode).toBe(200);
+      expect(res.body.status).toBe('ok');
+      expect(Array.isArray(res.body.fragments)).toBe(true);
+      expect(res.body.fragments[0].length).toBe(0);
+    });
+
+
+    test('authenticated users get a fragments array after POST', async () => {
+      const data = "test data";
+      await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/plain')
+        .send(data);
+
+      const res = await request(app).get('/v1/fragments').auth('user1@email.com', 'password1');
+      console.log(res.body.fragments[0])
+      expect(res.statusCode).toBe(200);
+      expect(res.body.status).toBe('ok');
+      expect(Array.isArray(res.body.fragments)).toBe(true);
+      expect(res.body.fragments[0].length).toBe(1);
+    });
   });
 
-  // TODO: we'll need to add tests to check the contents of the fragments array later
+
+  describe('GET Fragments by Id route', () => {
+
+    test('unauthenticated requests are denied', () => request(app).get('/v1/fragments/123').expect(401));
+
+    test('incorrect credentials are denied', () =>
+      request(app).get('/v1/fragments/123').auth('invalid@email.com', 'incorrect_password').expect(401));
+
+
+    test('authenticated users get a fragment data by id', async () => {
+      const data = "test data";
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/plain')
+        .send(data);
+
+      const res = await request(app).get(`/v1/fragments/${result.body.fragments.id}`).auth('user1@email.com', 'password1');
+
+      const binaryData = Buffer.from(res.body);
+      const textData = binaryData.toString();
+
+      expect(res.statusCode).toBe(200);
+      expect(textData).toEqual(expect.stringContaining('test data'));
+    });
+
+    test('authenticated users does not have any fragments', async () => {
+      const res = await request(app).get(`/v1/fragments/111111`).auth('user1@email.com', 'password1');
+      expect(res.statusCode).toBe(404);
+    });
+
+  });
+
 });
