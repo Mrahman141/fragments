@@ -4,8 +4,6 @@ const request = require('supertest');
 
 const app = require('../../src/app');
 
-const hash = require('../../src/hash');
-
 
 describe('GET /v1/fragments', () => {
 
@@ -20,7 +18,6 @@ describe('GET /v1/fragments', () => {
     test('authenticated users get a empty fragments array', async () => {
       const res = await request(app).get('/v1/fragments').auth('user1@email.com', 'password1');
 
-      console.log(res.body.fragments[0])
       expect(res.statusCode).toBe(200);
       expect(res.body.status).toBe('ok');
       expect(Array.isArray(res.body.fragments)).toBe(true);
@@ -37,7 +34,6 @@ describe('GET /v1/fragments', () => {
         .send(data);
 
       const res = await request(app).get('/v1/fragments').auth('user1@email.com', 'password1');
-      console.log(res.body.fragments[0])
       expect(res.statusCode).toBe(200);
       expect(res.body.status).toBe('ok');
       expect(Array.isArray(res.body.fragments)).toBe(true);
