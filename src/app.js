@@ -9,7 +9,6 @@ const authenticate = require('./auth');
 
 const { createErrorResponse } = require('./response');
 
-
 const logger = require('./logger');
 const pino = require('pino-http')({
   // Use our default logger instance, which is already configured
@@ -37,7 +36,6 @@ app.use(compression());
 // Set up our passport authentication middleware
 passport.use(authenticate.strategy());
 app.use(passport.initialize());
-
 
 app.use('/', require('./routes'));
 

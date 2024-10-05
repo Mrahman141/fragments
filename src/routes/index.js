@@ -29,8 +29,8 @@ router.get('/', (req, res) => {
     author,
     githubUrl: 'https://github.com/mrahman141/fragments',
     version,
-  }
-  const successResponse = createSuccessResponse(data)
+  };
+  const successResponse = createSuccessResponse(data);
   res.status(200).json(successResponse);
 });
 

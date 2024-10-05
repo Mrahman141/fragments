@@ -22,6 +22,7 @@ These dependencies are necessary for the application to function in production:
 - **[aws-jwt-verify](https://www.npmjs.com/package/aws-jwt-verify)**: A library for verifying JSON Web Tokens (JWTs) issued by Amazon Cognito and other AWS services.
 - **[compression](https://www.npmjs.com/package/compression)**: Middleware for Express that compresses HTTP responses to improve performance.
 - **[cors](https://www.npmjs.com/package/cors)**: Provides middleware to enable Cross-Origin Resource Sharing (CORS) in Express apps.
+- **[crypto](https://www.npmjs.com/package/crypto)**: ^1.0.1 - A module to provide cryptographic functionalities in Node.js applications.
 - **[dotenv](https://www.npmjs.com/package/dotenv)**: Loads environment variables from a `.env` file into `process.env`, enhancing security and flexibility.
 - **[express](https://www.npmjs.com/package/express)**: A fast, unopinionated, minimalist web framework for Node.js.
 - **[helmet](https://www.npmjs.com/package/helmet)**: Helps secure your Express app by setting various HTTP headers.
@@ -61,6 +62,26 @@ These dependencies are necessary for the application to function in production:
 
   ```
   npm run lint
+  ```
+
+## Testing
+
+- To run unit tests, run:
+
+  ```
+  npm run test
+  ```
+
+- To run unit tests for a specific file, run:
+
+  ```
+  npm run test:watch {Uni_test_file_name}
+  ```
+
+- To see the unit test coverage, run:
+
+  ```
+  npm run coverage
   ```
 
 ## Environment Variables
@@ -105,3 +126,22 @@ This file contains the environment variables needed for configuring the applicat
 - **Method:** `GET`
 - **Description:** An authenticated route for the current user to get a list of fragments
 - **Response:** `200 OK`, `401 Unauthorized`
+
+- **Route:** `/v1/fragments/?expand=1`
+- **Method:** `GET`
+- **Description:** An authenticated route for the current user to get a list of fragments and more infroamtion about the fragment if they want.
+- **Response:** `200 OK`, `401 Unauthorized`, `500 Internal Server Error`
+
+### Get a fragment for the current user by fragment Id
+
+- **Route:** `/v1/fragments/:id`
+- **Method:** `GET`
+- **Description:** Gets an authenticated user's fragment data (i.e., raw binary data) with the given id.
+- **Response:** `200 OK`, `401 Unauthorized`, `404 Not Found`, `500 Internal Server Error`
+
+### Post a fragment for the current user
+
+- **Route:** `/v1/fragments`
+- **Method:** `POST`
+- **Description:** An authenticated route for the current user to post a fragments for a specific type of media.
+- **Response:** `200 OK`, `401 Unauthorized`, `415 Unsupported Media Type`, `500 Internal Server Error`

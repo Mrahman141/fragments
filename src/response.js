@@ -33,7 +33,7 @@ module.exports.createErrorResponse = function (code, message) {
     status: 'error',
     error: {
       code: code,
-      message: message
-    }
+      message: message,
+    },
   };
 };
