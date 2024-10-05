@@ -8,7 +8,7 @@ const { Fragment } = require('../../model/fragment');
  */
 module.exports.getall = async (req, res) => {
   try {
-    const expand = req.query.expand === '0' ? false : true;
+    const expand = req.query.expand === '1';
 
     const result = await Fragment.byUser(req.user, expand);
     const data = { fragments: result ? [result] : [] };
