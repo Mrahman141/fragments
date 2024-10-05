@@ -3,7 +3,6 @@ const { createSuccessResponse, createErrorResponse } = require('../../response')
 const logger = require('../../logger');
 const { Fragment } = require('../../model/fragment');
 
-
 /**
  * Get a list of fragments for the current user
  */
@@ -11,25 +10,21 @@ module.exports.getall = async (req, res) => {
   try {
     const expand = req.query.expand === '0' ? false : true;
 
-
     const result = await Fragment.byUser(req.user, expand);
     const data = { fragments: result ? [result] : [] };
 
-    logger.debug(data)
+    logger.debug(data);
 
     const baseUrl = 'http://' + req.headers.host + '/v1/fragments/';
     res.set('Location', baseUrl);
-    const successResponse = createSuccessResponse(data)
+    const successResponse = createSuccessResponse(data);
     return res.status(200).json({ ...successResponse });
-
-
   } catch (err) {
     const error = createErrorResponse(500, err.message);
-    logger.error(error)
-    return res.status(500).json(error)
+    logger.error(error);
+    return res.status(500).json(error);
   }
 };
-
 
 /**
  * Get a fragment data by fragments id for the current user
@@ -40,10 +35,10 @@ module.exports.getById = async (req, res) => {
 
   let fragment;
   try {
-    fragment = await Fragment.byId(req.user, id)
+    fragment = await Fragment.byId(req.user, id);
   } catch (err) {
-    const error = createErrorResponse(404, err.message)
-    logger.error(error)
+    const error = createErrorResponse(404, err.message);
+    logger.error(error);
     return res.status(404).json(error);
   }
 

@@ -5,8 +5,6 @@ const request = require('supertest');
 // Get our Express app object (we don't need the server part)
 const app = require('../../src/app');
 
-
-
 describe('Error check', () => {
   test('should return HTTP 404 response', async () => {
     const res = await request(app).get('/error');

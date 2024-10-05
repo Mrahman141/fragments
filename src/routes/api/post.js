@@ -8,14 +8,13 @@ const { Fragment } = require('../../model/fragment');
  */
 module.exports = async (req, res) => {
   try {
-
     let data;
     if (Buffer.isBuffer(req.body)) {
       data = req.body;
       logger.info(`in the post route witht the data: ${data}`);
     } else {
-      const error = createErrorResponse(415, 'Media type not supported')
-      logger.error(error)
+      const error = createErrorResponse(415, 'Media type not supported');
+      logger.error(error);
       return res.status(415).json(error);
     }
 
@@ -25,29 +24,25 @@ module.exports = async (req, res) => {
       ownerId: req.user,
       size: size,
       type: contentType,
-    }
+    };
 
-    const new_fragment = new Fragment(fragment_data)
-    logger.info('Created a new fragment')
-    logger.debug(new_fragment)
+    const new_fragment = new Fragment(fragment_data);
+    logger.info('Created a new fragment');
+    logger.debug(new_fragment);
 
-
-    await new_fragment.setData(data)
+    await new_fragment.setData(data);
 
     const baseUrl = 'http://' + req.headers.host + '/v1/fragments/';
     const contentLength = Buffer.byteLength(req.body);
     res.set('Location', baseUrl + new_fragment.id);
     res.set('Content-Length', contentLength);
 
-
-    const sucess = createSuccessResponse({ fragments: new_fragment })
+    const sucess = createSuccessResponse({ fragments: new_fragment });
     logger.info(sucess);
     return res.status(200).json({ ...sucess });
-
   } catch (err) {
     const error = createErrorResponse(500, err.message);
-    logger.error(error)
-    return res.status(500).json(error)
-
+    logger.error(error);
+    return res.status(500).json(error);
   }
 };

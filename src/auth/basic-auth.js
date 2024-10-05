@@ -22,4 +22,4 @@ module.exports.strategy = () =>
     })
   );
 
-  module.exports.authenticate = () => authorize('http');
+module.exports.authenticate = () => authorize('http');

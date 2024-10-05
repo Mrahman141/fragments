@@ -5,7 +5,7 @@ const {
   writeFragmentData,
   readFragmentData,
   listFragments,
-  deleteFragment
+  deleteFragment,
 } = require('../../src/model/data/memory/index');
 
 describe('Fragment operations', () => {

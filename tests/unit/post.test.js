@@ -4,8 +4,6 @@ const app = require('../../src/app');
 
 const hash = require('../../src/hash');
 
-
-
 describe('POST /v1/fragments', () => {
   // If the request is missing the Authorization header, it should be forbidden
   test('unauthenticated requests are denied', () => request(app).post('/v1/fragments').expect(401));
@@ -15,7 +13,7 @@ describe('POST /v1/fragments', () => {
     request(app).post('/v1/fragments').auth('invalid@email.com', 'incorrect_password').expect(401));
 
   test('authenticated users can post a fragment', async () => {
-    const data = "test data";
+    const data = 'test data';
     const res = await request(app)
       .post('/v1/fragments')
       .auth('user1@email.com', 'password1')
@@ -26,9 +24,8 @@ describe('POST /v1/fragments', () => {
     expect(res.body.status).toBe('ok');
   });
 
-
   test('Invalid file type', async () => {
-    const data = "test data";
+    const data = 'test data';
     const res = await request(app)
       .post('/v1/fragments')
       .auth('user1@email.com', 'password1')
@@ -40,7 +37,7 @@ describe('POST /v1/fragments', () => {
   });
 
   test('POST response includes a Location header', async () => {
-    const data = "test data";
+    const data = 'test data';
     const res = await request(app)
       .post('/v1/fragments')
       .auth('user1@email.com', 'password1')
@@ -54,9 +51,9 @@ describe('POST /v1/fragments', () => {
   });
 
   test('POST response includes all necessary and expected properties', async () => {
-    const data = "test data";
+    const data = 'test data';
     const size = Buffer.byteLength(data);
-    const hashed_email = hash('user1@email.com')
+    const hashed_email = hash('user1@email.com');
     const res = await request(app)
       .post('/v1/fragments')
       .auth('user1@email.com', 'password1')
@@ -78,15 +75,13 @@ describe('POST /v1/fragments', () => {
 
     expect(res.body.fragments).toHaveProperty('ownerId');
     expect(res.body.fragments.ownerId).toBe(hashed_email);
-
   });
 
   test('No data sent through the body', async () => {
-
     const res = await request(app)
       .post('/v1/fragments')
       .auth('user1@email.com', 'password1')
-      .set('Content-Type', 'text/plain')
+      .set('Content-Type', 'text/plain');
 
     expect(res.statusCode).toBe(500);
     expect(res.body.status).toBe('error');

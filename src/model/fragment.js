@@ -20,27 +20,20 @@ class Fragment {
       id = randomUUID();
     }
     if (!ownerId || !type) {
-      throw new Error(
-        `ownerId and type required, got ownerId=${ownerId}, type=${type}`
-      );
+      throw new Error(`ownerId and type required, got ownerId=${ownerId}, type=${type}`);
     }
     if (!size) {
-      size = 0
+      size = 0;
     }
     if (typeof size !== 'number' || size < 0) {
-      throw new Error(
-        `size cannot be a string or a negative number`
-      );
+      throw new Error(`size cannot be a string or a negative number`);
     }
     if (!created) created = new Date().toISOString();
     if (!updated) updated = new Date().toISOString();
 
-
     const parsedType = contentType.parse(type);
     if (!Fragment.isSupportedType(parsedType.type)) {
-      throw new Error(
-        `Invalid type, got type=${type}`
-      );
+      throw new Error(`Invalid type, got type=${type}`);
     }
 
     this.id = id;
@@ -58,7 +51,6 @@ class Fragment {
    * @returns Promise<Array<Fragment>>
    */
   static async byUser(ownerId, expand = false) {
-
     const data = await listFragments(ownerId, expand);
     return data;
   }
@@ -72,11 +64,9 @@ class Fragment {
   static async byId(ownerId, id) {
     const data = await readFragment(ownerId, id);
     if (!data) {
-      throw new Error(
-        `Could not find any fragment data for ${ownerId} and ${id}`
-      )
+      throw new Error(`Could not find any fragment data for ${ownerId} and ${id}`);
     }
-    return new Fragment(data)
+    return new Fragment(data);
   }
 
   /**
@@ -102,7 +92,7 @@ class Fragment {
       updated: this.updated,
       type: this.type,
       size: this.size,
-    }
+    };
     return await writeFragment(data);
   }
 
@@ -113,9 +103,7 @@ class Fragment {
   async getData() {
     const data = await readFragmentData(this.ownerId, this.id);
     if (!data) {
-      throw new Error(
-        `No data found of ${this.ownerId} and ${this.id}.`
-      );
+      throw new Error(`No data found of ${this.ownerId} and ${this.id}.`);
     }
 
     try {
@@ -175,8 +163,6 @@ class Fragment {
     return formatConversions[type] || [type];
   }
 
-
-
   /**
    * Returns true if we know how to work with this content type
    * @param {string} value a Content-Type value (e.g., 'text/plain' or 'text/plain: charset=utf-8')
@@ -197,7 +183,6 @@ class Fragment {
     ];
     const Value_without_charset = value.split(';')[0].trim();
     return validTypes.includes(Value_without_charset);
-
   }
 }
 
