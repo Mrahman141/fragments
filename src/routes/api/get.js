@@ -54,3 +54,24 @@ module.exports.getById = async (req, res) => {
 
   return res.status(200).send(data);
 };
+
+
+/**
+ * Get a fragment metadata by fragments id for the current user
+ */
+module.exports.getInfoById = async (req, res) => {
+  
+  const { id } = req.params;
+  logger.debug(`Fetching fragment with ID: ${id}`);
+
+  let fragment;
+  try {
+    fragment = await Fragment.byId(req.user, id);
+    const data = createSuccessResponse({ code: 200, fragment: fragment });
+    return res.status(200).json({ ...data });
+  } catch (err) {
+    const error = createErrorResponse(404, err.message);
+    logger.error(error);
+    return res.status(404).json(error);
+  }
+};

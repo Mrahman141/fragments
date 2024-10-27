@@ -32,6 +32,12 @@ router.get('/fragments', get.getall);
 // Get a fragment data by fragments id for the current user
 router.get('/fragments/:id', get.getById);
 
+
+// Get a fragment metadata by fragments id for the current user
+// TODO: Unit Tests
+router.get('/fragments/:id/info', get.getInfoById);
+
+
 // Use a raw body parser for POST, which will give a `Buffer` Object or `{}` at `req.body`
 // You can use Buffer.isBuffer(req.body) to test if it was parsed by the raw body parser.
 router.post('/fragments', rawBody(), require('./post'));
