@@ -1,33 +1,39 @@
-FROM node:22.8.0
+# Stage 1: Build dependencies
+FROM node:22.8.0@sha256:bd00c03095f7586432805dbf7989be10361d27987f93de904b1fc003949a4794 AS build
 
 LABEL maintainer="Mohammed Aminor Rahman <mrahman141@myseneca.ca>"
 LABEL description="Fragments node.js microservice"
 
-# We default to use port 8080 in our service
 ENV PORT=8080
-
-# Reduce npm spam when installing within Docker
-# https://docs.npmjs.com/cli/v8/using-npm/config#loglevel
 ENV NPM_CONFIG_LOGLEVEL=warn
-
-# Disable colour when run inside Docker
-# https://docs.npmjs.com/cli/v8/using-npm/config#color
 ENV NPM_CONFIG_COLOR=false
+ENV NODE_ENV=production
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-
-RUN npm install 
+RUN npm ci --only=production
 
 COPY ./src ./src
 
-# Copy our HTPASSWD file
 COPY ./tests/.htpasswd ./tests/.htpasswd
 
+# Stage 2: Production
+FROM node:22-alpine AS production
+WORKDIR /app
+
+# Install curl for health check functionality
+RUN apk add --no-cache curl
+
+# Copy only the necessary files from the build stage
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/src ./src
+COPY --from=build /app/tests/.htpasswd ./tests/.htpasswd
+COPY --from=build /app/package*.json ./
+
+# Health check to verify the server is running
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8080 || exit 1
+
 CMD npm start
-
-# We run our service on port 8080
 EXPOSE 8080
-
-
