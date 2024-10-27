@@ -37,9 +37,9 @@ module.exports = async (req, res) => {
     res.set('Location', baseUrl + new_fragment.id);
     res.set('Content-Length', contentLength);
 
-    const sucess = createSuccessResponse({ fragments: new_fragment });
-    logger.info(sucess);
-    return res.status(200).json({ ...sucess });
+    const success = createSuccessResponse({ fragments: new_fragment });
+    logger.info(success);
+    return res.status(200).json({ ...success });
   } catch (err) {
     const error = createErrorResponse(500, err.message);
     logger.error(error);
