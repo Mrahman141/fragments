@@ -23,7 +23,7 @@ FROM node:22-alpine AS production
 WORKDIR /app
 
 # Install curl for health check functionality
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl=8.9.1-r0
 
 # Copy only the necessary files from the build stage
 COPY --from=build /app/node_modules ./node_modules
@@ -35,5 +35,5 @@ COPY --from=build /app/package*.json ./
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:8080 || exit 1
 
-CMD npm start
+CMD ["npm", "start"]
 EXPOSE 8080
