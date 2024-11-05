@@ -52,6 +52,9 @@ module.exports.getById = async (req, res) => {
     return res.status(404).json(error);
   }
 
+  res.setHeader('Content-Type', fragment.type);
+
+
   return res.status(200).send(data);
 };
 
@@ -60,7 +63,7 @@ module.exports.getById = async (req, res) => {
  * Get a fragment metadata by fragments id for the current user
  */
 module.exports.getInfoById = async (req, res) => {
-  
+
   const { id } = req.params;
   logger.debug(`Fetching fragment with ID: ${id}`);
 

@@ -62,11 +62,10 @@ describe('GET /v1/fragments', () => {
         .get(`/v1/fragments/${result.body.fragments.id}`)
         .auth('user1@email.com', 'password1');
 
-      const binaryData = Buffer.from(res.body);
-      const textData = binaryData.toString();
-
       expect(res.statusCode).toBe(200);
-      expect(textData).toEqual(expect.stringContaining('test data'));
+      expect(res.get('Content-Type')).toBe('text/plain');
+      expect(parseInt(res.get('Content-Length'))).toBe(Buffer.byteLength(data));
+      expect(res.text).toBe(data);
     });
 
     test('authenticated users does not have any fragments', async () => {
