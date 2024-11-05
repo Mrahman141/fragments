@@ -74,5 +74,45 @@ describe('GET /v1/fragments', () => {
         .auth('user1@email.com', 'password1');
       expect(res.statusCode).toBe(404);
     });
+
+    test('Conversion of fragment data from .md to .html', async () => {
+      const mdToHtml = require('markdown-it')();
+      const data = '# Test data'
+      const htmldata = mdToHtml.render(data.toString())
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/markdown')
+        .send(data);
+
+      const res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.html`)
+        .auth('user1@email.com', 'password1');
+
+      expect(res.statusCode).toBe(200);
+      expect(res.get('Content-Type')).toContain('text/html');
+      expect(res.text).toBe(htmldata);
+    });
+  });
+
+
+  describe('GET Fragments info by Id route', () => {
+
+    test('The route returns the metedata of the fragment', async () => {
+      const data = 'Test data'
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/plain')
+        .send(data);
+
+      const res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}/info`)
+        .auth('user1@email.com', 'password1');
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.fragment).toEqual(result.body.fragments)
+    });
+
   });
 });

@@ -65,6 +65,7 @@ module.exports.getById = async (req, res) => {
   }
 
   res.setHeader('Content-Type', fragment.type);
+
   return res.status(200).send(data);
 };
 
