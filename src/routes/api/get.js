@@ -61,6 +61,10 @@ module.exports.getById = async (req, res) => {
     if (fragment.type === "text/markdown" && ext === "html") {
       data = mdToHtml.render(data.toString())
       fragment.type = 'text/html'
+    } else {
+      const error = createErrorResponse(415, `Unsupported file extension/conversion`);
+      logger.error(error);
+      return res.status(415).json(error);
     }
   }
 
