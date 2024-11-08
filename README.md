@@ -28,6 +28,7 @@ These dependencies are necessary for the application to function in production:
 - **[helmet](https://www.npmjs.com/package/helmet)**: Helps secure your Express app by setting various HTTP headers.
 - **[http-auth](https://www.npmjs.com/package/http-auth)**: A simple HTTP authentication library for Node.js that supports Basic, Digest, and more.
 - **[http-auth-passport](https://www.npmjs.com/package/http-auth-passport)**: A package that integrates `http-auth` with the `passport.js` authentication middleware.
+- **[markdown-it](https://www.npmjs.com/package/markdown-it)**: A fast, full-featured Markdown parser and renderer for Node.js, supporting CommonMark and GitHub Flavored Markdown.
 - **[passport](https://www.npmjs.com/package/passport)**: Simple, unobtrusive authentication for Node.js, supporting a wide range of strategies.
 - **[passport-http-bearer](https://www.npmjs.com/package/passport-http-bearer)**: HTTP Bearer authentication strategy for Passport, used for securing APIs.
 - **[pino](https://www.npmjs.com/package/pino)**: A fast and low-overhead logging library for Node.js.
@@ -132,12 +133,26 @@ This file contains the environment variables needed for configuring the applicat
 - **Description:** An authenticated route for the current user to get a list of fragments and more infroamtion about the fragment if they want.
 - **Response:** `200 OK`, `401 Unauthorized`, `500 Internal Server Error`
 
-### Get a fragment for the current user by fragment Id
+### Get a fragment data for the current user by fragment Id
 
 - **Route:** `/v1/fragments/:id`
 - **Method:** `GET`
 - **Description:** Gets an authenticated user's fragment data (i.e., raw binary data) with the given id.
 - **Response:** `200 OK`, `401 Unauthorized`, `404 Not Found`, `500 Internal Server Error`
+
+### Conversion of a Fragment data
+
+- **Route:** `/v1/fragments/:id.ext`
+- **Method:** `GET`
+- **Description:** Gets an authenticated user's fragment data (i.e., raw binary data) with the given id with the specified format.
+- **Response:** `200 OK`, `401 Unauthorized`, `404 Not Found`, `500 Internal Server Error`, `415 Unsupported Media Type`
+
+### Get a fragment metadata information for the current user by fragment Id
+
+- **Route:** `/v1/fragments/:id/info`
+- **Method:** `GET`
+- **Description:** Allows the authenticated user to get (i.e., read) the metadata for one of their existing fragments with the specified id.
+- **Response:** `200 OK`, `401 Unauthorized`, `404 Not Found`
 
 ### Post a fragment for the current user
 
