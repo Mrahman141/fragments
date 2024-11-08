@@ -1,7 +1,9 @@
 // src/routes/api/get.js
+const mdToHtml = require('markdown-it')();
 const { createSuccessResponse, createErrorResponse } = require('../../response');
 const logger = require('../../logger');
 const { Fragment } = require('../../model/fragment');
+
 
 /**
  * Get a list of fragments for the current user
@@ -30,7 +32,10 @@ module.exports.getall = async (req, res) => {
  * Get a fragment data by fragments id for the current user
  */
 module.exports.getById = async (req, res) => {
-  const { id } = req.params;
+  const parts = req.params.id.split('.');
+  const id = parts[0];
+  const ext = parts[1];
+
   logger.debug(`Fetching fragment with ID: ${id}`);
 
   let fragment;
@@ -52,6 +57,19 @@ module.exports.getById = async (req, res) => {
     return res.status(404).json(error);
   }
 
+  if (ext) {
+    if (fragment.type === "text/markdown" && ext === "html") {
+      data = mdToHtml.render(data.toString())
+      fragment.type = 'text/html'
+    } else {
+      const error = createErrorResponse(415, `Unsupported file extension/conversion`);
+      logger.error(error);
+      return res.status(415).json(error);
+    }
+  }
+
+  res.setHeader('Content-Type', fragment.type);
+
   return res.status(200).send(data);
 };
 
@@ -60,7 +78,7 @@ module.exports.getById = async (req, res) => {
  * Get a fragment metadata by fragments id for the current user
  */
 module.exports.getInfoById = async (req, res) => {
-  
+
   const { id } = req.params;
   logger.debug(`Fetching fragment with ID: ${id}`);
 

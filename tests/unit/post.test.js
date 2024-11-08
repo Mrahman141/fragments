@@ -12,12 +12,60 @@ describe('POST /v1/fragments', () => {
   test('incorrect credentials are denied', () =>
     request(app).post('/v1/fragments').auth('invalid@email.com', 'incorrect_password').expect(401));
 
-  test('authenticated users can post a fragment', async () => {
+  test('authenticated users can post a text/plain fragment', async () => {
     const data = 'test data';
     const res = await request(app)
       .post('/v1/fragments')
       .auth('user1@email.com', 'password1')
       .set('Content-Type', 'text/plain')
+      .send(data);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.status).toBe('ok');
+  });
+
+  test('authenticated users can post a text/markdown fragment', async () => {
+    const data = '# Test data'
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/markdown')
+      .send(data);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.status).toBe('ok');
+  });
+
+  test('authenticated users can post a text/html fragment', async () => {
+    const data = '<p>Test data</p>'
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/html')
+      .send(data);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.status).toBe('ok');
+  });
+
+  test('authenticated users can post a text/csv fragment', async () => {
+    const data = 'field1,field2\nvalue1,value2'
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/csv')
+      .send(data);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.status).toBe('ok');
+  });
+
+  test('authenticated users can post a application/json fragment', async () => {
+    const data = JSON.stringify({ field1: 'value1', field2: 'value2' })
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'application/json')
       .send(data);
 
     expect(res.statusCode).toBe(200);
