@@ -20,7 +20,7 @@ describe('POST /v1/fragments', () => {
       .set('Content-Type', 'text/plain')
       .send(data);
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     expect(res.body.status).toBe('ok');
   });
 
@@ -32,7 +32,7 @@ describe('POST /v1/fragments', () => {
       .set('Content-Type', 'text/markdown')
       .send(data);
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     expect(res.body.status).toBe('ok');
   });
 
@@ -44,7 +44,7 @@ describe('POST /v1/fragments', () => {
       .set('Content-Type', 'text/html')
       .send(data);
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     expect(res.body.status).toBe('ok');
   });
 
@@ -56,7 +56,7 @@ describe('POST /v1/fragments', () => {
       .set('Content-Type', 'text/csv')
       .send(data);
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     expect(res.body.status).toBe('ok');
   });
 
@@ -68,7 +68,7 @@ describe('POST /v1/fragments', () => {
       .set('Content-Type', 'application/json')
       .send(data);
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     expect(res.body.status).toBe('ok');
   });
 
@@ -92,7 +92,7 @@ describe('POST /v1/fragments', () => {
       .set('Content-Type', 'text/plain')
       .send(data);
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     expect(res.body.status).toBe('ok');
     expect(res.header).toHaveProperty('location');
     expect(res.header.location).toMatch(/^http/); // Optionally check if it starts with 'http'
@@ -108,7 +108,7 @@ describe('POST /v1/fragments', () => {
       .set('Content-Type', 'text/plain')
       .send(data);
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     expect(res.body.status).toBe('ok');
     expect(res.body.fragments).toHaveProperty('id');
     expect(res.body.fragments).toHaveProperty('created');
