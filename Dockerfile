@@ -23,7 +23,7 @@ FROM node:22-alpine AS production
 WORKDIR /app
 
 # Install curl for health check functionality
-RUN apk add --no-cache curl=8.11.0-r1
+RUN apk add --no-cache curl=8.11.0-r2
 
 # Copy only the necessary files from the build stage
 COPY --from=build /app/node_modules ./node_modules

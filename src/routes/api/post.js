@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
 
     const success = createSuccessResponse({ fragments: new_fragment });
     logger.info(success);
-    return res.status(200).json({ ...success });
+    return res.status(201).json({ ...success });
   } catch (err) {
     const error = createErrorResponse(500, err.message);
     logger.error(error);

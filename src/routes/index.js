@@ -5,7 +5,7 @@ const { createSuccessResponse } = require('../response');
 const express = require('express');
 
 // Our authentication middleware
-const { authenticate } = require('../auth');
+const { authenticate } = require('../auth/index');
 
 // version and author from package.json
 const { version, author } = require('../../package.json');
