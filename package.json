@@ -13,7 +13,8 @@
     "dev": "cross-env LOG_LEVEL=debug nodemon ./src/index.js --watch src",
     "debug": "cross-env LOG_LEVEL=debug nodemon --inspect=0.0.0.0:9229 ./src/index.js --watch src",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test:integration": "hurl --test --glob \"tests/integration/**/*.hurl\""
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "@eslint/js": "^9.9.1",
+    "@orangeopensource/hurl": "^5.0.1",
     "cross-env": "^7.0.3",
     "eslint": "^9.9.1",
     "globals": "^15.9.0",
