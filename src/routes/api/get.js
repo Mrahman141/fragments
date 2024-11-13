@@ -50,7 +50,7 @@ module.exports.getById = async (req, res) => {
   let data;
   try {
     data = await fragment.getData();
-    logger.debug(data);
+    // logger.debug(data);
   } catch (err) {
     const error = createErrorResponse(404, err.message);
     logger.error(error);
