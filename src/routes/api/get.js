@@ -50,7 +50,6 @@ module.exports.getById = async (req, res) => {
   let data;
   try {
     data = await fragment.getData();
-    // logger.debug(data);
   } catch (err) {
     const error = createErrorResponse(404, err.message);
     logger.error(error);
@@ -84,6 +83,42 @@ module.exports.getById = async (req, res) => {
       }
       else if (ext === "txt") {
         data = data.toString().replace(/<[^>]*>/g, '');
+        fragment.type = 'text/plain'
+      }
+    }
+    else if (fragment.type === "text/csv" && ["csv", "txt", "json"].includes(ext)) {
+      if (ext === "csv") {
+        // Do nothing
+      } else if (ext === "txt") {
+        data = data.toString().replace(/,/g, ' ');
+        fragment.type = 'text/plain'
+      } else if (ext === "json") {
+        const csvContent = data.toString();
+        const lines = csvContent.split('\n');
+        const headers = lines[0].split(',');
+        data = lines.slice(1).map(line => {
+          const values = line.split(',');
+          return headers.reduce((obj, header, index) => {
+            obj[header] = values[index];
+            return obj;
+          }, {});
+        });
+        fragment.type = 'application/json'
+      }
+    }
+    else if (fragment.type === "application/json" && ["json", "yaml", "yml", "txt"].includes(ext)) {
+      if (ext === "json") {
+        // Do nothing
+      } else if (ext === "yaml" || ext === "yml") {
+        const jsonContent = data.toString();
+
+        const parsedJson = JSON.parse(jsonContent);
+        const yaml = require('js-yaml');  // Assuming you have js-yaml installed
+        data = yaml.dump(parsedJson);
+        fragment.type = 'application/yaml'
+      } else if (ext === "txt") {
+        data = data.toString();
+        fragment.type = 'text/plain'
       }
     }
     else {
