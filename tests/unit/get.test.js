@@ -155,6 +155,32 @@ describe('GET /v1/fragments', () => {
       expect(txt_res.text).toBe(textdata);
     });
 
+    test('text/html to .html and .txt', async () => {
+      const data = '<p>Fahim</p>'
+      const textdata = data.replace(/<[^>]*>/g, '');
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/html')
+        .send(data);
+
+      const html_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.html`)
+        .auth('user1@email.com', 'password1');
+
+      expect(html_res.statusCode).toBe(200);
+      expect(html_res.get('Content-Type')).toContain('text/html');
+      expect(html_res.text).toBe(data);
+
+      const txt_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.txt`)
+        .auth('user1@email.com', 'password1');
+
+      expect(txt_res.statusCode).toBe(200);
+      expect(txt_res.get('Content-Type')).toContain('text/plain');
+      expect(txt_res.text).toBe(textdata);
+    });
+
 
 
 
