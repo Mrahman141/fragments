@@ -121,6 +121,17 @@ module.exports.getById = async (req, res) => {
         fragment.type = 'text/plain'
       }
     }
+    else if (fragment.type === "application/yaml" && ["yaml", "txt"].includes(ext)) {
+      if (ext === "yaml") {
+        // Do nothing
+      } else if (ext === "txt") {
+        const yamlContent = data.toString();  
+        const yaml = require('js-yaml');  
+        const parsedYaml = yaml.load(yamlContent);  
+        data = JSON.stringify(parsedYaml, null, 2); 
+        fragment.type = 'text/plain' 
+      }
+    }
     else {
       const error = createErrorResponse(415, `Unsupported file extension/conversion`);
       logger.error(error);
