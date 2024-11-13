@@ -3,6 +3,8 @@ const mdToHtml = require('markdown-it')();
 const { createSuccessResponse, createErrorResponse } = require('../../response');
 const logger = require('../../logger');
 const { Fragment } = require('../../model/fragment');
+const sharp = require('sharp');  // Import sharp for image processing
+
 
 
 /**
@@ -34,7 +36,7 @@ module.exports.getall = async (req, res) => {
 module.exports.getById = async (req, res) => {
   const parts = req.params.id.split('.');
   const id = parts[0];
-  const ext = parts[1];
+  let ext = parts[1];
 
   logger.debug(`Fetching fragment with ID: ${id}`);
 
@@ -125,12 +127,24 @@ module.exports.getById = async (req, res) => {
       if (ext === "yaml") {
         // Do nothing
       } else if (ext === "txt") {
-        const yamlContent = data.toString();  
-        const yaml = require('js-yaml');  
-        const parsedYaml = yaml.load(yamlContent);  
-        data = JSON.stringify(parsedYaml, null, 2); 
-        fragment.type = 'text/plain' 
+        const yamlContent = data.toString();
+        const yaml = require('js-yaml');
+        const parsedYaml = yaml.load(yamlContent);
+        data = JSON.stringify(parsedYaml, null, 2);
+        fragment.type = 'text/plain'
       }
+    }
+    if (fragment.type.startsWith('image/') && ["png", "jpg", "jpeg", "webp", "gif", "avif"].includes(ext)) {
+      if (ext === 'gif') {
+        data = await sharp(data, { animated: true }).gif().toBuffer();
+      } else {
+        if (ext === "jpeg" || ext === "jpg") {
+          ext = "jpeg";
+        }
+        let img = sharp(data);
+        data = await img.toFormat(ext).toBuffer();
+      }
+      fragment.type = `image/${ext}`;
     }
     else {
       const error = createErrorResponse(415, `Unsupported file extension/conversion`);
