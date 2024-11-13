@@ -1,8 +1,12 @@
 // tests/unit/get.test.js
 
 const request = require('supertest');
-
+const yaml = require('js-yaml');
 const app = require('../../src/app');
+const csvToJson = require('csvtojson');
+const sharp = require('sharp');  // Import sharp for image processing
+
+
 
 describe('GET /v1/fragments', () => {
   describe('GET all Fragments route', () => {
@@ -74,40 +78,6 @@ describe('GET /v1/fragments', () => {
         .auth('user1@email.com', 'password1');
       expect(res.statusCode).toBe(404);
     });
-
-    test('Conversion of fragment data from .md to .html', async () => {
-      const mdToHtml = require('markdown-it')();
-      const data = '# Test data'
-      const htmldata = mdToHtml.render(data.toString())
-      const result = await request(app)
-        .post('/v1/fragments')
-        .auth('user1@email.com', 'password1')
-        .set('Content-Type', 'text/markdown')
-        .send(data);
-
-      const res = await request(app)
-        .get(`/v1/fragments/${result.body.fragments.id}.html`)
-        .auth('user1@email.com', 'password1');
-
-      expect(res.statusCode).toBe(200);
-      expect(res.get('Content-Type')).toContain('text/html');
-      expect(res.text).toBe(htmldata);
-    });
-
-    test('Unsupported Conversion fragment data', async () => {
-      const data = '# Test data'
-      const result = await request(app)
-        .post('/v1/fragments')
-        .auth('user1@email.com', 'password1')
-        .set('Content-Type', 'text/markdown')
-        .send(data);
-
-      const res = await request(app)
-        .get(`/v1/fragments/${result.body.fragments.id}.json`)
-        .auth('user1@email.com', 'password1');
-
-      expect(res.statusCode).toBe(415);
-    });
   });
 
 
@@ -127,6 +97,305 @@ describe('GET /v1/fragments', () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body.fragment).toEqual(result.body.fragments)
+    });
+
+    test('Fragment does not exist', async () => {
+
+      const res = await request(app)
+        .get(`/v1/fragments/1234id/info`)
+        .auth('user1@email.com', 'password1');
+
+      expect(res.statusCode).toBe(404);
+    });
+
+  });
+
+  describe('Conversion with .ext', () => {
+
+    test('text/plain to .txt', async () => {
+      const data = 'test data';
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/plain')
+        .send(data);
+
+      expect(result.statusCode).toBe(201);
+      expect(result.body.status).toBe('ok');
+
+      const res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.txt`)
+        .auth('user1@email.com', 'password1');
+
+      expect(res.statusCode).toBe(200);
+      expect(res.get('Content-Type')).toContain('text/plain');
+      expect(res.text).toBe(data);
+    });
+
+    test('text/markdown to .md, .html and .txt', async () => {
+      const mdToHtml = require('markdown-it')();
+      const data = '# Test data'
+      const htmldata = mdToHtml.render(data.toString())
+      const textdata = htmldata.replace(/<[^>]*>/g, '');
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/markdown')
+        .send(data);
+
+      const md_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.md`)
+        .auth('user1@email.com', 'password1');
+
+      expect(md_res.statusCode).toBe(200);
+      expect(md_res.get('Content-Type')).toContain('text/markdown');
+      expect(md_res.text).toBe(data);
+
+      const html_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.html`)
+        .auth('user1@email.com', 'password1');
+
+      expect(html_res.statusCode).toBe(200);
+      expect(html_res.get('Content-Type')).toContain('text/html');
+      expect(html_res.text).toBe(htmldata);
+
+      const txt_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.txt`)
+        .auth('user1@email.com', 'password1');
+
+      expect(txt_res.statusCode).toBe(200);
+      expect(txt_res.get('Content-Type')).toContain('text/plain');
+      expect(txt_res.text).toBe(textdata);
+    });
+
+    test('text/html to .html and .txt', async () => {
+      const data = '<p>Fahim</p>'
+      const textdata = data.replace(/<[^>]*>/g, '');
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/html')
+        .send(data);
+
+      expect(result.statusCode).toBe(201);
+      expect(result.body.status).toBe('ok');
+
+      const html_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.html`)
+        .auth('user1@email.com', 'password1');
+
+      expect(html_res.statusCode).toBe(200);
+      expect(html_res.get('Content-Type')).toContain('text/html');
+      expect(html_res.text).toBe(data);
+
+      const txt_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.txt`)
+        .auth('user1@email.com', 'password1');
+
+      expect(txt_res.statusCode).toBe(200);
+      expect(txt_res.get('Content-Type')).toContain('text/plain');
+      expect(txt_res.text).toBe(textdata);
+    });
+
+
+    test('text/csv to .csv, .txt and .json', async () => {
+      const csvData = `name,age,city\nAlice,30,New York\nBob,25,Los Angeles`;
+      let jsonData;
+      const textData = csvData.toString().replace(/,/g, ' ');
+      csvToJson()
+        .fromString(csvData)
+        .then(jsonArray => {
+          jsonData = jsonArray
+        })
+        .catch(error => {
+          console.error("Error converting CSV to JSON:", error);
+        });
+
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/csv')
+        .send(csvData);
+
+      expect(result.statusCode).toBe(201);
+      expect(result.body.status).toBe('ok');
+
+      const csv_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.csv`)
+        .auth('user1@email.com', 'password1');
+
+      expect(csv_res.statusCode).toBe(200);
+      expect(csv_res.get('Content-Type')).toContain('text/csv');
+      expect(csv_res.text).toBe(csvData);
+
+      const txt_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.txt`)
+        .auth('user1@email.com', 'password1');
+
+      expect(txt_res.statusCode).toBe(200);
+      expect(txt_res.get('Content-Type')).toContain('text/plain');
+      expect(txt_res.text).toBe(textData);
+
+      const json_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.json`)
+        .auth('user1@email.com', 'password1');
+
+      expect(json_res.statusCode).toBe(200);
+      expect(json_res.get('Content-Type')).toContain('application/json');
+      expect(json_res.body).toEqual(jsonData);
+    });
+
+
+
+    test('application/json to .json, .yaml and .txt', async () => {
+      const data = {
+        "name": "Tester Name",
+        "Age": 22
+      };
+      const yamlData = yaml.dump(data);
+
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'application/json')
+        .send(data);
+
+      expect(result.statusCode).toBe(201);
+      expect(result.body.status).toBe('ok');
+
+      const json_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.json`)
+        .auth('user1@email.com', 'password1');
+
+      expect(json_res.statusCode).toBe(200);
+      expect(json_res.get('Content-Type')).toContain('application/json');
+      expect(json_res.body).toEqual(data);
+
+      const yaml_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.yaml`)
+        .auth('user1@email.com', 'password1');
+
+      expect(yaml_res.statusCode).toBe(200);
+      expect(yaml_res.get('Content-Type')).toContain('application/yaml');
+      expect(yaml_res.text).toBe(yamlData);
+
+      const txt_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.txt`)
+        .auth('user1@email.com', 'password1');
+
+      expect(txt_res.statusCode).toBe(200);
+      expect(txt_res.get('Content-Type')).toContain('text/plain');
+      expect(txt_res.text).toBe(JSON.stringify(data));
+    });
+
+    test('application/yaml to .yaml and .txt', async () => {
+      const data = `
+      name: Tester Name
+      age: 22
+      address:
+        city: New York
+        zip: 10001
+      hobbies:
+        - reading
+        - coding
+        - hiking
+      `;
+      const yamlContent = data.toString();
+      const yaml = require('js-yaml');
+      const parsedYaml = yaml.load(yamlContent);
+      const textData = JSON.stringify(parsedYaml, null, 2);
+
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'application/yaml')
+        .send(data);
+
+      expect(result.statusCode).toBe(201);
+      expect(result.body.status).toBe('ok');
+
+      const yaml_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.yaml`)
+        .auth('user1@email.com', 'password1');
+
+      expect(yaml_res.statusCode).toBe(200);
+      expect(yaml_res.get('Content-Type')).toContain('application/yaml');
+      expect(yaml_res.text).toBe(data);
+
+      const txt_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.txt`)
+        .auth('user1@email.com', 'password1');
+
+      expect(txt_res.statusCode).toBe(200);
+      expect(txt_res.get('Content-Type')).toContain('text/plain');
+      expect(txt_res.text).toBe(textData);
+    });
+
+
+
+    test('image/png to .jpeg, .webp, .gif, .avif', async () => {
+      const img = await sharp({
+        text: {
+          text: 'Hello, world!',
+          width: 400,
+          height: 300,
+        },
+      })
+        .png()
+        .toBuffer();
+
+      const result = await request(app)
+        .post(`/v1/fragments`)
+        .auth(`user1@email.com`, `password1`)
+        .set(`Content-Type`, `image/png`)
+        .send(img);
+
+      expect(result.statusCode).toBe(201);
+      expect(result.body.status).toBe('ok');
+
+      let convertRes = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.jpeg`)
+        .auth(`user1@email.com`, `password1`)
+
+      expect(convertRes.status).toBe(200);
+      expect(convertRes.type).toBe('image/jpeg');
+
+      convertRes = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.webp`)
+        .auth(`user1@email.com`, `password1`)
+
+      expect(convertRes.status).toBe(200);
+      expect(convertRes.type).toBe('image/webp');
+
+      convertRes = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.gif`)
+        .auth(`user1@email.com`, `password1`)
+
+      expect(convertRes.status).toBe(200);
+      expect(convertRes.type).toBe('image/gif');
+
+      convertRes = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.avif`)
+        .auth(`user1@email.com`, `password1`)
+
+      expect(convertRes.status).toBe(200);
+      expect(convertRes.type).toBe('image/avif');
+    });
+
+
+    test('Unsupported Conversion fragment data', async () => {
+      const data = '# Test data'
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/markdown')
+        .send(data);
+
+      const res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.json`)
+        .auth('user1@email.com', 'password1');
+
+      expect(res.statusCode).toBe(415);
     });
 
   });

@@ -180,6 +180,7 @@ class Fragment {
       `image/jpeg`,
       `image/webp`,
       `image/gif`,
+      `image/avif`
     ];
     const Value_without_charset = value.split(';')[0].trim();
     return validTypes.includes(Value_without_charset);

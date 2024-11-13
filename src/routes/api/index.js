@@ -34,7 +34,6 @@ router.get('/fragments/:id', get.getById);
 
 
 // Get a fragment metadata by fragments id for the current user
-// TODO: Unit Tests
 router.get('/fragments/:id/info', get.getInfoById);
 
 
@@ -44,5 +43,8 @@ router.post('/fragments', rawBody(), require('./post'));
 
 //DELETE route for /v1/fragments/:id to delete a fragment based on id parameter
 router.delete('/fragments/:id', require('./delete'));
+
+//PUT route for /v1/fragments/:id to update a fragment based on id parameter
+router.put('/fragments/:id', rawBody(), require('./put'));
 
 module.exports = router;
