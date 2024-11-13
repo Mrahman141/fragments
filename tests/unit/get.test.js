@@ -3,6 +3,8 @@
 const request = require('supertest');
 
 const app = require('../../src/app');
+const csvToJson = require('csvtojson');
+
 
 describe('GET /v1/fragments', () => {
   describe('GET all Fragments route', () => {
@@ -181,6 +183,50 @@ describe('GET /v1/fragments', () => {
       expect(txt_res.text).toBe(textdata);
     });
 
+
+    test('text/csv to .csv, .txt and .json', async () => {
+      const csvData = `name,age,city\nAlice,30,New York\nBob,25,Los Angeles`;
+      let jsonData;
+      const textData = csvData.toString().replace(/,/g, ' ');
+      csvToJson()
+        .fromString(csvData)
+        .then(jsonArray => {
+          jsonData = jsonArray
+        })
+        .catch(error => {
+          console.error("Error converting CSV to JSON:", error);
+        });
+
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/csv')
+        .send(csvData);
+
+      const csv_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.csv`)
+        .auth('user1@email.com', 'password1');
+
+      expect(csv_res.statusCode).toBe(200);
+      expect(csv_res.get('Content-Type')).toContain('text/csv');
+      expect(csv_res.text).toBe(csvData);
+
+      const txt_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.txt`)
+        .auth('user1@email.com', 'password1');
+
+      expect(txt_res.statusCode).toBe(200);
+      expect(txt_res.get('Content-Type')).toContain('text/plain');
+      expect(txt_res.text).toBe(textData);
+
+      const json_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.json`)
+        .auth('user1@email.com', 'password1');
+
+      expect(json_res.statusCode).toBe(200);
+      expect(json_res.get('Content-Type')).toContain('application/json');
+      expect(json_res.body).toEqual(jsonData);
+    });
 
 
 
