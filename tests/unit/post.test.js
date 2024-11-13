@@ -1,7 +1,6 @@
 const request = require('supertest');
-
 const app = require('../../src/app');
-
+const sharp = require('sharp');  // Import sharp for image processing
 const hash = require('../../src/hash');
 
 describe('POST /v1/fragments', () => {
@@ -72,6 +71,133 @@ describe('POST /v1/fragments', () => {
     expect(res.body.status).toBe('ok');
   });
 
+  test('authenticated users can post a application/yaml fragment', async () => {
+    const data = `
+    name: Tester Name
+    age: 22
+    address:
+      city: New York
+      zip: 10001
+    hobbies:
+      - reading
+      - coding
+      - hiking
+    `;
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'application/yaml')
+      .send(data);
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.status).toBe('ok');
+  });
+
+  test('authenticated users can post a image/png fragment', async () => {
+    const img = await sharp({
+      text: {
+        text: 'Hello, world!',
+        width: 400,
+        height: 300,
+      },
+    })
+      .png()
+      .toBuffer();
+
+    const result = await request(app)
+      .post(`/v1/fragments`)
+      .auth(`user1@email.com`, `password1`)
+      .set(`Content-Type`, `image/png`)
+      .send(img);
+
+    expect(result.statusCode).toBe(201);
+    expect(result.body.status).toBe('ok');
+  });
+
+  test('authenticated users can post a image/jpeg fragment', async () => {
+    const img = await sharp({
+      text: {
+        text: 'Hello, world!',
+        width: 400,
+        height: 300,
+      },
+    })
+      .jpeg()
+      .toBuffer();
+
+    const result = await request(app)
+      .post(`/v1/fragments`)
+      .auth(`user1@email.com`, `password1`)
+      .set(`Content-Type`, `image/jpeg`)
+      .send(img);
+
+    expect(result.statusCode).toBe(201);
+    expect(result.body.status).toBe('ok');
+  });
+
+  test('authenticated users can post a image/webp fragment', async () => {
+    const img = await sharp({
+      text: {
+        text: 'Hello, world!',
+        width: 400,
+        height: 300,
+      },
+    })
+      .webp()
+      .toBuffer();
+
+    const result = await request(app)
+      .post(`/v1/fragments`)
+      .auth(`user1@email.com`, `password1`)
+      .set(`Content-Type`, `image/webp`)
+      .send(img);
+
+    expect(result.statusCode).toBe(201);
+    expect(result.body.status).toBe('ok');
+  });
+
+  test('authenticated users can post a image/avif fragment', async () => {
+    const img = await sharp({
+      text: {
+        text: 'Hello, world!',
+        width: 400,
+        height: 300,
+      },
+    })
+      .avif()
+      .toBuffer();
+
+    const result = await request(app)
+      .post(`/v1/fragments`)
+      .auth(`user1@email.com`, `password1`)
+      .set(`Content-Type`, `image/avif`)
+      .send(img);
+
+    expect(result.statusCode).toBe(201);
+    expect(result.body.status).toBe('ok');
+  });
+
+  test('authenticated users can post a image/gif fragment', async () => {
+    const img = await sharp({
+      text: {
+        text: 'Hello, world!',
+        width: 400,
+        height: 300,
+      },
+    })
+      .gif()
+      .toBuffer();
+
+    const result = await request(app)
+      .post(`/v1/fragments`)
+      .auth(`user1@email.com`, `password1`)
+      .set(`Content-Type`, `image/gif`)
+      .send(img);
+
+    expect(result.statusCode).toBe(201);
+    expect(result.body.status).toBe('ok');
+  });
+
   test('Invalid file type', async () => {
     const data = 'test data';
     const res = await request(app)
@@ -95,7 +221,7 @@ describe('POST /v1/fragments', () => {
     expect(res.statusCode).toBe(201);
     expect(res.body.status).toBe('ok');
     expect(res.header).toHaveProperty('location');
-    expect(res.header.location).toMatch(/^http/); // Optionally check if it starts with 'http'
+    expect(res.header.location).toMatch(/^http/); 
   });
 
   test('POST response includes all necessary and expected properties', async () => {

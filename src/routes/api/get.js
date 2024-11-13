@@ -113,7 +113,7 @@ module.exports.getById = async (req, res) => {
         const jsonContent = data.toString();
 
         const parsedJson = JSON.parse(jsonContent);
-        const yaml = require('js-yaml');  // Assuming you have js-yaml installed
+        const yaml = require('js-yaml');
         data = yaml.dump(parsedJson);
         fragment.type = 'application/yaml'
       } else if (ext === "txt") {
