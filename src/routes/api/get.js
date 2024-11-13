@@ -59,10 +59,8 @@ module.exports.getById = async (req, res) => {
   }
 
   if (ext) {
-    if (fragment.type === "text/plain" && ext != "txt") {
-      const error = createErrorResponse(415, `Unsupported file extension/conversion`);
-      logger.error(error);
-      return res.status(415).json(error);
+    if (fragment.type === "text/plain" && ["txt"].includes(ext)) {
+      // Do nothing
     }
     else if (fragment.type === "text/markdown" && ["md", "html", "txt"].includes(ext)) {
       if (ext === "md") {
@@ -134,7 +132,7 @@ module.exports.getById = async (req, res) => {
         fragment.type = 'text/plain'
       }
     }
-    if (fragment.type.startsWith('image/') && ["png", "jpg", "jpeg", "webp", "gif", "avif"].includes(ext)) {
+    else if (fragment.type.startsWith('image/') && ["png", "jpg", "jpeg", "webp", "gif", "avif"].includes(ext)) {
       if (ext === 'gif') {
         data = await sharp(data, { animated: true }).gif().toBuffer();
       } else {

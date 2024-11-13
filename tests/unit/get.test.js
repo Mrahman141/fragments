@@ -74,40 +74,6 @@ describe('GET /v1/fragments', () => {
         .auth('user1@email.com', 'password1');
       expect(res.statusCode).toBe(404);
     });
-
-    test('Conversion of fragment data from .md to .html', async () => {
-      const mdToHtml = require('markdown-it')();
-      const data = '# Test data'
-      const htmldata = mdToHtml.render(data.toString())
-      const result = await request(app)
-        .post('/v1/fragments')
-        .auth('user1@email.com', 'password1')
-        .set('Content-Type', 'text/markdown')
-        .send(data);
-
-      const res = await request(app)
-        .get(`/v1/fragments/${result.body.fragments.id}.html`)
-        .auth('user1@email.com', 'password1');
-
-      expect(res.statusCode).toBe(200);
-      expect(res.get('Content-Type')).toContain('text/html');
-      expect(res.text).toBe(htmldata);
-    });
-
-    test('Unsupported Conversion fragment data', async () => {
-      const data = '# Test data'
-      const result = await request(app)
-        .post('/v1/fragments')
-        .auth('user1@email.com', 'password1')
-        .set('Content-Type', 'text/markdown')
-        .send(data);
-
-      const res = await request(app)
-        .get(`/v1/fragments/${result.body.fragments.id}.json`)
-        .auth('user1@email.com', 'password1');
-
-      expect(res.statusCode).toBe(415);
-    });
   });
 
 
@@ -127,6 +93,95 @@ describe('GET /v1/fragments', () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body.fragment).toEqual(result.body.fragments)
+    });
+
+  });
+
+  describe('Conversion with .ext', () => {
+
+    test('text/plain to .txt', async () => {
+      const data = 'test data';
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/plain')
+        .send(data);
+
+      expect(result.statusCode).toBe(201);
+      expect(result.body.status).toBe('ok');
+
+      const res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.txt`)
+        .auth('user1@email.com', 'password1');
+
+      expect(res.statusCode).toBe(200);
+      expect(res.get('Content-Type')).toContain('text/plain');
+      expect(res.text).toBe(data);
+    });
+
+    test('text/markdown to .md, .html and .txt', async () => {
+      const mdToHtml = require('markdown-it')();
+      const data = '# Test data'
+      const htmldata = mdToHtml.render(data.toString())
+      const textdata = htmldata.replace(/<[^>]*>/g, '');
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/markdown')
+        .send(data);
+
+      const md_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.md`)
+        .auth('user1@email.com', 'password1');
+
+      expect(md_res.statusCode).toBe(200);
+      expect(md_res.get('Content-Type')).toContain('text/markdown');
+      expect(md_res.text).toBe(data);
+
+      const html_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.html`)
+        .auth('user1@email.com', 'password1');
+
+      expect(html_res.statusCode).toBe(200);
+      expect(html_res.get('Content-Type')).toContain('text/html');
+      expect(html_res.text).toBe(htmldata);
+
+      const txt_res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.txt`)
+        .auth('user1@email.com', 'password1');
+
+      expect(txt_res.statusCode).toBe(200);
+      expect(txt_res.get('Content-Type')).toContain('text/plain');
+      expect(txt_res.text).toBe(textdata);
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    test('Unsupported Conversion fragment data', async () => {
+      const data = '# Test data'
+      const result = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/markdown')
+        .send(data);
+
+      const res = await request(app)
+        .get(`/v1/fragments/${result.body.fragments.id}.json`)
+        .auth('user1@email.com', 'password1');
+
+      expect(res.statusCode).toBe(415);
     });
 
   });
