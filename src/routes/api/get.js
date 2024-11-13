@@ -6,7 +6,6 @@ const { Fragment } = require('../../model/fragment');
 const sharp = require('sharp');  // Import sharp for image processing
 
 
-
 /**
  * Get a list of fragments for the current user
  */
