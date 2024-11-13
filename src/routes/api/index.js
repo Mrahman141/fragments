@@ -34,7 +34,6 @@ router.get('/fragments/:id', get.getById);
 
 
 // Get a fragment metadata by fragments id for the current user
-// TODO: Unit Tests
 router.get('/fragments/:id/info', get.getInfoById);
 
 
