@@ -58,10 +58,35 @@ module.exports.getById = async (req, res) => {
   }
 
   if (ext) {
-    if (fragment.type === "text/markdown" && ext === "html") {
-      data = mdToHtml.render(data.toString())
-      fragment.type = 'text/html'
-    } else {
+    if (fragment.type === "text/plain" && ext != "txt") {
+      const error = createErrorResponse(415, `Unsupported file extension/conversion`);
+      logger.error(error);
+      return res.status(415).json(error);
+    }
+    else if (fragment.type === "text/markdown" && ["md", "html", "txt"].includes(ext)) {
+      if (ext === "md") {
+        // Do nothing
+      }
+      else if (ext === "html") {
+        data = mdToHtml.render(data.toString())
+        fragment.type = 'text/html'
+      }
+      else if (ext === "txt") {
+        const htmlContent = mdToHtml.render(data.toString());
+
+        data = htmlContent.replace(/<[^>]*>/g, '');
+        fragment.type = 'text/plain'
+      }
+    }
+    else if (fragment.type === "text/html" && ["html", "txt"].includes(ext)) {
+      if (ext === "html") {
+        // Do nothing
+      }
+      else if (ext === "txt") {
+        data = data.toString().replace(/<[^>]*>/g, '');
+      }
+    }
+    else {
       const error = createErrorResponse(415, `Unsupported file extension/conversion`);
       logger.error(error);
       return res.status(415).json(error);
