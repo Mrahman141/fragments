@@ -45,4 +45,7 @@ router.post('/fragments', rawBody(), require('./post'));
 //DELETE route for /v1/fragments/:id to delete a fragment based on id parameter
 router.delete('/fragments/:id', require('./delete'));
 
+//PUT route for /v1/fragments/:id to update a fragment based on id parameter
+router.put('/fragments/:id', rawBody(), require('./put'));
+
 module.exports = router;
